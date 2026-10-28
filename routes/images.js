@@ -3,7 +3,7 @@
  */
 const express = require('express')
 const { authRequired } = require('../middleware/auth')
-const { searchImages, verifyAll, verifyImage, deepseekKey, signImageUrl, verifyImageSig, isSafeRemoteUrl } = require('../lib/imageSources')
+const { searchImages, verifyAll, verifyImage, deepseekKey, signImageUrl, verifyImageSig, isSafeRemoteUrl, isReachable } = require('../lib/imageSources')
 
 const router = express.Router()
 
@@ -37,7 +37,15 @@ router.post('/search', authRequired, async (req, res) => {
   if (cached) return res.json({ success: true, data: { ...cached, cached: true } })
 
   try {
-    const { items, provider: used } = await searchImages(query, count, provider)
+    const { items: rawItems, provider: used } = await searchImages(query, count, provider)
+
+    // 只保留服务器本机抓得到的图（国内图床常封境外 IP，否则前端必破图）
+    const reachFlags = await Promise.all(rawItems.map(it => isReachable(it.url)))
+    const items = rawItems.filter((_, i) => reachFlags[i])
+    if (!items.length) {
+      return res.json({ success: false, message: '搜到的图片源在当前服务器网络下都不可达，换个关键词试试' })
+    }
+
     const verdicts = verify
       ? await verifyAll(items.map(i => i.url), requirement)
       : items.map(() => ({ ok: true, match: -1, reason: '未审图' }))
@@ -125,6 +133,20 @@ router.get('/proxy', async (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=86400')
     res.send(buf)
   } catch (err) {
+    // 兜底：https 失败时换 http 再试一次
+    try {
+      const alt = raw.replace(/^https:/, 'http:')
+      const up2 = await fetch(alt, { headers: { 'User-Agent': 'Mozilla/5.0' }, redirect: 'follow' })
+      if (up2.ok) {
+        const buf2 = Buffer.from(await up2.arrayBuffer())
+        const t2 = sniffImage(buf2) || (up2.headers.get('content-type') || '').split(';')[0]
+        if (t2) {
+          res.setHeader('Content-Type', t2)
+          res.setHeader('Cache-Control', 'public, max-age=86400')
+          return res.send(buf2)
+        }
+      }
+    } catch (e2) { /* 忽略 */ }
     res.status(502).send('proxy failed')
   }
 })

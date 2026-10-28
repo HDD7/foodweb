@@ -188,9 +188,9 @@ function exec (conn, command, { quiet = false } = {}) {
 function normalizeRemotePath (input) {
   if (!input) return input
   return input
-    .replace(/^[A-Za-z]:[\/]Program Files[\/]Git[\/]?/, '/')
-    .replace(/^[A-Za-z]:[\/]Program Files[\/]Git[\/]/i, '/')
+    .replace(/^[A-Za-z]:[\/]Program Files[\/]Git[\/]?/i, '/')
 }
+
 
 function normalizeLocalPath (input) {
   if (!input || input === '-') return input

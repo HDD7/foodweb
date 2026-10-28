@@ -551,10 +551,11 @@
           </div>
         </div>
         <div class="detail-actions">
+          <button class="btn btn-primary" style="flex:2" onclick="App.addToCart('${r._id}')">🛒 加入点餐</button>
           ${isOwner
-            ? `<button class="btn btn-danger-outline" style="flex:1" onclick="App.deleteRecipe('${r._id}')">删除</button>
-               <button class="btn btn-primary" style="flex:2" onclick="App.go('/recipe-form?id=${r._id}')">编辑菜谱</button>`
-            : `<button class="btn btn-primary btn-block" onclick="App.addToCart('${r._id}')">🛒 加入点餐</button>`}
+            ? `<button class="btn btn-outline" style="flex:1" onclick="App.go('/recipe-form?id=${r._id}')">编辑</button>
+               <button class="btn btn-danger-outline" style="flex:1" onclick="App.deleteRecipe('${r._id}')">删除</button>`
+            : ''}
         </div>
       </div>`
       this.recipe = r
