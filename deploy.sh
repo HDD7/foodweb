@@ -171,6 +171,23 @@ else
 fi
 ok "依赖安装完成（$(du -sh node_modules | cut -f1)）"
 
+# better-sqlite3 13.x 的预编译包在部分 Linux/CPU 上会段错误（SIGSEGV），固定降级到 12.4.1
+if [ "$(uname -s)" = "Linux" ]; then
+  if ! sudo -u "$APP_USER" node -e "const D=require('better-sqlite3'); new D(':memory:')" >/dev/null 2>&1; then
+    warn "原生模块 better-sqlite3 不可用，降级到 12.4.1 并重装"
+    sudo -u "$APP_USER" npm i better-sqlite3@12.4.1 --no-audit --no-fund >/dev/null 2>&1 || {
+      warn "预编译包也失败，安装编译工具从源码构建"
+      apt-get install -y -qq build-essential python3 >/dev/null
+      sudo -u "$APP_USER" npm i better-sqlite3@12.4.1 --build-from-source --no-audit --no-fund
+    }
+    if sudo -u "$APP_USER" node -e "const D=require('better-sqlite3'); new D(':memory:')" >/dev/null 2>&1; then
+      ok "better-sqlite3 已修复（12.4.1）"
+    else
+      die "better-sqlite3 仍不可用，请手动排查：cd $APP_DIR && sudo -u $APP_USER npm rebuild better-sqlite3 --build-from-source"
+    fi
+  fi
+fi
+
 # ---------- 8. systemd ----------
 step "配置 systemd 服务"
 NODE_BIN="$(command -v node)"
