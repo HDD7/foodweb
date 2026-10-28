@@ -1,0 +1,24 @@
+{
+  "_说明": "复制本文件为 config.json 后填写。config.json 已被 .gitignore 忽略，不会提交到仓库。环境变量优先级高于本文件。",
+
+  "deepseekKey": "sk-在这里填你的 DeepSeek API Key",
+  "deepseekBaseUrl": "https://api.deepseek.com",
+  "deepseekModel": "deepseek-flash",
+  "deepseekVisionModel": "deepseek-flash",
+
+  "_图库key说明": "可选。填了之后搜图会优先用正版图库（可商用授权），留空则回退 360/百度图片",
+  "pexelsKey": "",
+  "pixabayKey": "",
+  "unsplashKey": "",
+
+  "_服务说明": "下面这些留空即使用默认值，也可用同名环境变量覆盖",
+  "port": 3000,
+  "host": "0.0.0.0",
+  "jwtSecret": "请改成一段随机长字符串，例如 openssl rand -hex 32 的输出",
+  "dataDir": "",
+  "uploadDir": "",
+
+  "_开关说明": "设为 false 可关闭对应功能入口",
+  "aiGenerate": true,
+  "imageSearch": true
+}

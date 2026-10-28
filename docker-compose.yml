@@ -1,0 +1,16 @@
+services:
+  food-yun:
+    build: .
+    container_name: food-yun-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"          # 按需修改，如 "8080:3000"
+    environment:
+      # 二选一：用 config.json（推荐）就留空，用环境变量则在此填写
+      JWT_SECRET: ${JWT_SECRET:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      PORT: 3000
+    volumes:
+      - ./config.json:/app/config.json:ro   # 服务端独立配置（密钥放这里，别打进镜像）
+      - ./data:/app/data                    # SQLite 数据库持久化
+      - ./uploads:/app/uploads              # 图片上传持久化

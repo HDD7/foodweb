@@ -1,0 +1,8 @@
+node_modules
+data
+uploads
+*.log
+config.json
+config.local.json
+.git
+backups

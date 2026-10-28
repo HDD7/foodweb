@@ -1,0 +1,26 @@
+{
+  "name": "food-yun-web",
+  "version": "1.0.0",
+  "description": "阿猪餐厅 - 家庭菜谱管理 Web 版（可部署于 VPS）",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "audit": "node tools/layout-audit.js --out ./shots",
+    "vision": "node tools/vision-review.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^13.0.3",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.2"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.16.0"
+  }
+}
